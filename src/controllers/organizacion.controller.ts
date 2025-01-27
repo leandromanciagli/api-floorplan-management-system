@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,8 +23,8 @@ import {OrganizacionRepository} from '../repositories';
 export class OrganizacionController {
   constructor(
     @repository(OrganizacionRepository)
-    public organizacionRepository : OrganizacionRepository,
-  ) {}
+    public organizacionRepository: OrganizacionRepository,
+  ) { }
 
   @post('/organizaciones')
   @response(200, {
@@ -37,7 +37,7 @@ export class OrganizacionController {
         'application/json': {
           schema: getModelSchemaRef(Organizacion, {
             title: 'NewOrganizacion',
-            
+
           }),
         },
       },
@@ -72,8 +72,21 @@ export class OrganizacionController {
   })
   async find(
     @param.filter(Organizacion) filter?: Filter<Organizacion>,
-  ): Promise<Organizacion[]> {
-    return this.organizacionRepository.find(filter);
+  ): Promise<any[]> {
+    const organizaciones = await this.organizacionRepository.find(filter);
+
+    // Contar la cantidad de usuarios para cada organización
+    const organizacionesConUsuarios = await Promise.all(
+      organizaciones.map(async (organizacion) => {
+        const cantidadUsuarios = await this.organizacionRepository.countUsuarios(organizacion.organizacionId);
+        return {
+          ...organizacion,
+          cantidadUsuarios,
+        };
+      }),
+    );
+
+    return organizacionesConUsuarios;
   }
 
   @patch('/organizaciones')

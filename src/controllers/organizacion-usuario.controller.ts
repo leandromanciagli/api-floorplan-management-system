@@ -26,7 +26,7 @@ export class OrganizacionUsuarioController {
     @repository(OrganizacionRepository) protected organizacionRepository: OrganizacionRepository,
   ) { }
 
-  @get('/organizacions/{id}/usuarios', {
+  @get('/organizaciones/{id}/usuarios', {
     responses: {
       '200': {
         description: 'Array of Organizacion has many Usuario',
@@ -45,7 +45,7 @@ export class OrganizacionUsuarioController {
     return this.organizacionRepository.usuarios(id).find(filter);
   }
 
-  @post('/organizacions/{id}/usuarios', {
+  @post('/organizaciones/{id}/usuarios', {
     responses: {
       '200': {
         description: 'Organizacion model instance',
@@ -70,7 +70,7 @@ export class OrganizacionUsuarioController {
     return this.organizacionRepository.usuarios(id).create(usuario);
   }
 
-  @patch('/organizacions/{id}/usuarios', {
+  @patch('/organizaciones/{id}/usuarios', {
     responses: {
       '200': {
         description: 'Organizacion.Usuario PATCH success count',
@@ -93,7 +93,7 @@ export class OrganizacionUsuarioController {
     return this.organizacionRepository.usuarios(id).patch(usuario, where);
   }
 
-  @del('/organizacions/{id}/usuarios', {
+  @del('/organizaciones/{id}/usuarios', {
     responses: {
       '200': {
         description: 'Organizacion.Usuario DELETE success count',

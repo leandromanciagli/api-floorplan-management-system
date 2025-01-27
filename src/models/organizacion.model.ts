@@ -1,4 +1,4 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Usuario} from './usuario.model';
 
 @model()
@@ -56,7 +56,6 @@ export class Organizacion extends Entity {
 
   @property({
     type: 'string',
-    required: true,
   })
   patronExpediente: string;
 
