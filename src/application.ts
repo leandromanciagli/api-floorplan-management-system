@@ -1,14 +1,16 @@
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
+import {RepositoryMixin} from '@loopback/repository';
+import {RestApplication} from '@loopback/rest';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
-import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
+import {AuthMiddlewareProvider} from './middleware/AuthMiddlewareProvider';
 import {MySequence} from './sequence';
+
 
 export {ApplicationConfig};
 
@@ -17,6 +19,9 @@ export class ApiFloorplanManagementSystemApplication extends BootMixin(
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
+
+    // Registra el middleware de autenticación en la aplicación
+    this.middleware(AuthMiddlewareProvider);
 
     // Set up the custom sequence
     this.sequence(MySequence);

@@ -1,5 +1,5 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
 import {FloorplanDataSource} from '../datasources';
 import {Organizacion, OrganizacionRelations, Usuario} from '../models';
 import {UsuarioRepository} from './usuario.repository';
@@ -18,5 +18,12 @@ export class OrganizacionRepository extends DefaultCrudRepository<
     super(Organizacion, dataSource);
     this.usuarios = this.createHasManyRepositoryFactoryFor('usuarios', usuarioRepositoryGetter,);
     this.registerInclusionResolver('usuarios', this.usuarios.inclusionResolver);
+  }
+
+  // Método para contar los usuarios de una organización
+  async countUsuarios(organizacionId: typeof Organizacion.prototype.organizacionId): Promise<number> {
+    const usuarioRepository = await this.usuarioRepositoryGetter();
+    const result = await usuarioRepository.count({organizacionId});
+    return result.count;
   }
 }
