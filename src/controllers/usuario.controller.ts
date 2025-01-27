@@ -7,24 +7,27 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
 import {Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
 
+
 export class UsuarioController {
+
   constructor(
     @repository(UsuarioRepository)
-    public usuarioRepository : UsuarioRepository,
-  ) {}
+    public usuarioRepository: UsuarioRepository,
+  ) { }
 
   @post('/usuarios')
   @response(200, {
@@ -37,14 +40,22 @@ export class UsuarioController {
         'application/json': {
           schema: getModelSchemaRef(Usuario, {
             title: 'NewUsuario',
-            
           }),
         },
       },
     })
     usuario: Usuario,
   ): Promise<Usuario> {
-    return this.usuarioRepository.create(usuario);
+    try {
+      let newUsuario = await this.usuarioRepository.create(usuario);
+      return newUsuario;
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new HttpErrors.BadRequest(`El DNI ${usuario.dni} ya se encuentra registrado.`);
+      }
+      console.log(error);
+      throw new HttpErrors.InternalServerError(error);
+    }
   }
 
   @get('/usuarios/count')
@@ -73,7 +84,14 @@ export class UsuarioController {
   async find(
     @param.filter(Usuario) filter?: Filter<Usuario>,
   ): Promise<Usuario[]> {
-    return this.usuarioRepository.find(filter);
+    try {
+      return this.usuarioRepository.find({
+        ...filter,
+        include: [{relation: 'rol'}], // Incluye explícitamente la relación rol
+      });
+    } catch (error) {
+      return error;
+    }
   }
 
   @patch('/usuarios')
@@ -126,7 +144,14 @@ export class UsuarioController {
     })
     usuario: Usuario,
   ): Promise<void> {
-    await this.usuarioRepository.updateById(id, usuario);
+    try {
+      await this.usuarioRepository.updateById(id, usuario);
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new HttpErrors.BadRequest(`El DNI ${usuario.dni} ya se encuentra registrado.`);
+      }
+      throw new HttpErrors.InternalServerError('Error al crear el usuario');
+    }
   }
 
   @put('/usuarios/{id}')
@@ -137,7 +162,14 @@ export class UsuarioController {
     @param.path.string('id') id: string,
     @requestBody() usuario: Usuario,
   ): Promise<void> {
-    await this.usuarioRepository.replaceById(id, usuario);
+    try {
+      await this.usuarioRepository.replaceById(id, usuario);
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new HttpErrors.BadRequest(`El DNI ${usuario.dni} ya se encuentra registrado.`);
+      }
+      throw new HttpErrors.InternalServerError('Error al crear el usuario');
+    }
   }
 
   @del('/usuarios/{id}')
