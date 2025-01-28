@@ -1,10 +1,7 @@
 import {
-  Count,
-  CountSchema,
   Filter,
   FilterExcludingWhere,
-  repository,
-  Where,
+  repository
 } from '@loopback/repository';
 import {
   del,
@@ -12,7 +9,6 @@ import {
   getModelSchemaRef,
   HttpErrors,
   param,
-  patch,
   post,
   put,
   requestBody,
@@ -58,17 +54,6 @@ export class UsuarioController {
     }
   }
 
-  @get('/usuarios/count')
-  @response(200, {
-    description: 'Usuario model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(
-    @param.where(Usuario) where?: Where<Usuario>,
-  ): Promise<Count> {
-    return this.usuarioRepository.count(where);
-  }
-
   @get('/usuarios')
   @response(200, {
     description: 'Array of Usuario model instances',
@@ -94,25 +79,6 @@ export class UsuarioController {
     }
   }
 
-  @patch('/usuarios')
-  @response(200, {
-    description: 'Usuario PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Usuario, {partial: true}),
-        },
-      },
-    })
-    usuario: Usuario,
-    @param.where(Usuario) where?: Where<Usuario>,
-  ): Promise<Count> {
-    return this.usuarioRepository.updateAll(usuario, where);
-  }
-
   @get('/usuarios/{id}')
   @response(200, {
     description: 'Usuario model instance',
@@ -127,31 +93,6 @@ export class UsuarioController {
     @param.filter(Usuario, {exclude: 'where'}) filter?: FilterExcludingWhere<Usuario>
   ): Promise<Usuario> {
     return this.usuarioRepository.findById(id, filter);
-  }
-
-  @patch('/usuarios/{id}')
-  @response(204, {
-    description: 'Usuario PATCH success',
-  })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Usuario, {partial: true}),
-        },
-      },
-    })
-    usuario: Usuario,
-  ): Promise<void> {
-    try {
-      await this.usuarioRepository.updateById(id, usuario);
-    } catch (error) {
-      if (error.code === 11000) {
-        throw new HttpErrors.BadRequest(`El DNI ${usuario.dni} ya se encuentra registrado.`);
-      }
-      throw new HttpErrors.InternalServerError('Error al crear el usuario');
-    }
   }
 
   @put('/usuarios/{id}')

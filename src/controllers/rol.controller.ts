@@ -1,21 +1,17 @@
 import {
-  Count,
-  CountSchema,
   Filter,
   FilterExcludingWhere,
-  repository,
-  Where,
+  repository
 } from '@loopback/repository';
 import {
   del,
   get,
   getModelSchemaRef,
   param,
-  patch,
   post,
   put,
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
 import {Rol} from '../models';
 import {RolRepository} from '../repositories';
@@ -47,17 +43,6 @@ export class RolController {
     return this.rolRepository.create(rol);
   }
 
-  @get('/roles/count')
-  @response(200, {
-    description: 'Rol model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(
-    @param.where(Rol) where?: Where<Rol>,
-  ): Promise<Count> {
-    return this.rolRepository.count(where);
-  }
-
   @get('/roles')
   @response(200, {
     description: 'Array of Rol model instances',
@@ -76,25 +61,6 @@ export class RolController {
     return this.rolRepository.find(filter);
   }
 
-  @patch('/roles')
-  @response(200, {
-    description: 'Rol PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Rol, {partial: true}),
-        },
-      },
-    })
-    rol: Rol,
-    @param.where(Rol) where?: Where<Rol>,
-  ): Promise<Count> {
-    return this.rolRepository.updateAll(rol, where);
-  }
-
   @get('/roles/{id}')
   @response(200, {
     description: 'Rol model instance',
@@ -109,24 +75,6 @@ export class RolController {
     @param.filter(Rol, {exclude: 'where'}) filter?: FilterExcludingWhere<Rol>
   ): Promise<Rol> {
     return this.rolRepository.findById(id, filter);
-  }
-
-  @patch('/roles/{id}')
-  @response(204, {
-    description: 'Rol PATCH success',
-  })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Rol, {partial: true}),
-        },
-      },
-    })
-    rol: Rol,
-  ): Promise<void> {
-    await this.rolRepository.updateById(id, rol);
   }
 
   @put('/roles/{id}')

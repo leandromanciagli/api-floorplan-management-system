@@ -1,21 +1,17 @@
 import {
-  Count,
-  CountSchema,
   Filter,
   FilterExcludingWhere,
-  repository,
-  Where,
+  repository
 } from '@loopback/repository';
 import {
   del,
   get,
   getModelSchemaRef,
   param,
-  patch,
   post,
   put,
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
 import {Organizacion} from '../models';
 import {OrganizacionRepository} from '../repositories';
@@ -45,17 +41,6 @@ export class OrganizacionController {
     organizacion: Organizacion,
   ): Promise<Organizacion> {
     return this.organizacionRepository.create(organizacion);
-  }
-
-  @get('/organizaciones/count')
-  @response(200, {
-    description: 'Organizacion model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(
-    @param.where(Organizacion) where?: Where<Organizacion>,
-  ): Promise<Count> {
-    return this.organizacionRepository.count(where);
   }
 
   @get('/organizaciones')
@@ -89,25 +74,6 @@ export class OrganizacionController {
     return organizacionesConUsuarios;
   }
 
-  @patch('/organizaciones')
-  @response(200, {
-    description: 'Organizacion PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Organizacion, {partial: true}),
-        },
-      },
-    })
-    organizacion: Organizacion,
-    @param.where(Organizacion) where?: Where<Organizacion>,
-  ): Promise<Count> {
-    return this.organizacionRepository.updateAll(organizacion, where);
-  }
-
   @get('/organizaciones/{id}')
   @response(200, {
     description: 'Organizacion model instance',
@@ -122,24 +88,6 @@ export class OrganizacionController {
     @param.filter(Organizacion, {exclude: 'where'}) filter?: FilterExcludingWhere<Organizacion>
   ): Promise<Organizacion> {
     return this.organizacionRepository.findById(id, filter);
-  }
-
-  @patch('/organizaciones/{id}')
-  @response(204, {
-    description: 'Organizacion PATCH success',
-  })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Organizacion, {partial: true}),
-        },
-      },
-    })
-    organizacion: Organizacion,
-  ): Promise<void> {
-    await this.organizacionRepository.updateById(id, organizacion);
   }
 
   @put('/organizaciones/{id}')
