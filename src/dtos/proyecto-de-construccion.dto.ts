@@ -21,4 +21,14 @@ export class ProyectoDeConstruccionDTO {
     telefono: string,
     email: string,
   }
+  proyectistas: ProyectistaDTO[];
+}
+
+export class ProyectistaDTO {
+  apellido: string;
+  nombre: string;
+  dni: string;
+  matricula: string;
+  domicilio: string;
+  telefono: string;
 }

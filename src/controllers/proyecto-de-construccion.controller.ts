@@ -15,7 +15,7 @@ import {
 } from '@loopback/rest';
 import {ProyectoDeConstruccionDTO} from '../dtos/proyecto-de-construccion.dto';
 import {ProyectoDeConstruccion} from '../models';
-import {PropietarioRepository, ProyectoDeConstruccionRepository} from '../repositories';
+import {PropietarioRepository, ProyectistaRepository, ProyectoDeConstruccionRepository} from '../repositories';
 
 export class ProyectoDeConstruccionController {
   constructor(
@@ -24,6 +24,9 @@ export class ProyectoDeConstruccionController {
 
     @repository(PropietarioRepository)
     public propietarioRepository: PropietarioRepository,
+
+    @repository(ProyectistaRepository)
+    public proyectistaRepository: ProyectistaRepository,
   ) { }
 
   @post('/proyecto')
@@ -46,7 +49,7 @@ export class ProyectoDeConstruccionController {
       const nuevoPropietario = await this.propietarioRepository.create(proyectoDeConstruccion.propietario);
 
       // Creo el proyecto de construcción con el propietario
-      return this.proyectoDeConstruccionRepository.create({
+      const nuevoProyectoDeConstruccion = await this.proyectoDeConstruccionRepository.create({
         nombre: proyectoDeConstruccion.proyecto.nombre,
         nroExpediente: proyectoDeConstruccion.proyecto.nroExpediente,
         provinciaId: proyectoDeConstruccion.proyecto.provincia,
@@ -61,6 +64,18 @@ export class ProyectoDeConstruccionController {
         aprobado: false,
         propietarioId: nuevoPropietario.propietarioId,
       });
+
+      // Creo los proyectistas asociados al proyecto de construccion
+      if (proyectoDeConstruccion.proyectistas && proyectoDeConstruccion.proyectistas.length > 0) {
+        await Promise.all(
+          proyectoDeConstruccion.proyectistas.map(async (proyectista) => {
+            await this.proyectoDeConstruccionRepository.proyectistas(nuevoProyectoDeConstruccion.proyectoId).create(proyectista);
+          })
+        );
+      }
+
+      return nuevoProyectoDeConstruccion;
+
     } catch (error) {
       return error
     }
@@ -88,6 +103,7 @@ export class ProyectoDeConstruccionController {
         {relation: 'destinoFuncional'},
         {relation: 'tipoObra'},
         {relation: 'propietario'},
+        {relation: 'proyectistas'},
       ],
     });
   }

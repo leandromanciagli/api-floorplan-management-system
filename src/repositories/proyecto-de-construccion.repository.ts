@@ -1,11 +1,12 @@
 import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
+import {DefaultCrudRepository, repository, BelongsToAccessor, HasManyRepositoryFactory} from '@loopback/repository';
 import {FloorplanDataSource} from '../datasources';
-import {ProyectoDeConstruccion, ProyectoDeConstruccionRelations, DestinoFuncional, TipoObra, Provincia, Propietario} from '../models';
+import {ProyectoDeConstruccion, ProyectoDeConstruccionRelations, DestinoFuncional, TipoObra, Provincia, Propietario, Proyectista} from '../models';
 import {DestinoFuncionalRepository} from './destino-funcional.repository';
 import {TipoObraRepository} from './tipo-obra.repository';
 import {ProvinciaRepository} from './provincia.repository';
 import {PropietarioRepository} from './propietario.repository';
+import {ProyectistaRepository} from './proyectista.repository';
 
 export class ProyectoDeConstruccionRepository extends DefaultCrudRepository<
   ProyectoDeConstruccion,
@@ -21,10 +22,14 @@ export class ProyectoDeConstruccionRepository extends DefaultCrudRepository<
 
   public readonly propietario: BelongsToAccessor<Propietario, typeof ProyectoDeConstruccion.prototype.proyectoId>;
 
+  public readonly proyectistas: HasManyRepositoryFactory<Proyectista, typeof ProyectoDeConstruccion.prototype.proyectoId>;
+
   constructor(
-    @inject('datasources.floorplan') dataSource: FloorplanDataSource, @repository.getter('DestinoFuncionalRepository') protected destinoFuncionalRepositoryGetter: Getter<DestinoFuncionalRepository>, @repository.getter('TipoObraRepository') protected tipoObraRepositoryGetter: Getter<TipoObraRepository>, @repository.getter('ProvinciaRepository') protected provinciaRepositoryGetter: Getter<ProvinciaRepository>, @repository.getter('PropietarioRepository') protected propietarioRepositoryGetter: Getter<PropietarioRepository>,
+    @inject('datasources.floorplan') dataSource: FloorplanDataSource, @repository.getter('DestinoFuncionalRepository') protected destinoFuncionalRepositoryGetter: Getter<DestinoFuncionalRepository>, @repository.getter('TipoObraRepository') protected tipoObraRepositoryGetter: Getter<TipoObraRepository>, @repository.getter('ProvinciaRepository') protected provinciaRepositoryGetter: Getter<ProvinciaRepository>, @repository.getter('PropietarioRepository') protected propietarioRepositoryGetter: Getter<PropietarioRepository>, @repository.getter('ProyectistaRepository') protected proyectistaRepositoryGetter: Getter<ProyectistaRepository>,
   ) {
     super(ProyectoDeConstruccion, dataSource);
+    this.proyectistas = this.createHasManyRepositoryFactoryFor('proyectistas', proyectistaRepositoryGetter,);
+    this.registerInclusionResolver('proyectistas', this.proyectistas.inclusionResolver);
     this.propietario = this.createBelongsToAccessorFor('propietario', propietarioRepositoryGetter,);
     this.registerInclusionResolver('propietario', this.propietario.inclusionResolver);
     this.provincia = this.createBelongsToAccessorFor('provincia', provinciaRepositoryGetter,);
