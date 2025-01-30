@@ -7,3 +7,5 @@ export * from './tipo-obra.repository';
 export * from './provincia.repository';
 export * from './propietario.repository';
 export * from './proyectista.repository';
+export * from './direccion-tecnica.repository';
+export * from './tipo-persona.repository';

@@ -13,3 +13,8 @@ export * from './proyecto-de-construccion-destino-funcional.controller';
 export * from './proyecto-de-construccion-tipo-obra.controller';
 export * from './proyecto-de-construccion-provincia.controller';
 export * from './proyecto-de-construccion-propietario.controller';
+export * from './proyecto-de-construccion-proyectista.controller';
+export * from './direccion-tecnica.controller';
+export * from './direccion-tecnica-tipo-persona.controller';
+export * from './tipo-persona.controller';
+export * from './proyecto-de-construccion-direccion-tecnica.controller';

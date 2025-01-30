@@ -7,3 +7,5 @@ export * from './tipo-obra.model';
 export * from './provincia.model';
 export * from './propietario.model';
 export * from './proyectista.model';
+export * from './tipo-persona.model';
+export * from './direccion-tecnica.model';

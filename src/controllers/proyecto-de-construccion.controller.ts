@@ -15,7 +15,7 @@ import {
 } from '@loopback/rest';
 import {ProyectoDeConstruccionDTO} from '../dtos/proyecto-de-construccion.dto';
 import {ProyectoDeConstruccion} from '../models';
-import {PropietarioRepository, ProyectistaRepository, ProyectoDeConstruccionRepository} from '../repositories';
+import {DireccionTecnicaRepository, PropietarioRepository, ProyectistaRepository, ProyectoDeConstruccionRepository} from '../repositories';
 
 export class ProyectoDeConstruccionController {
   constructor(
@@ -27,6 +27,9 @@ export class ProyectoDeConstruccionController {
 
     @repository(ProyectistaRepository)
     public proyectistaRepository: ProyectistaRepository,
+
+    @repository(DireccionTecnicaRepository)
+    public direccionTecnicaRepository: DireccionTecnicaRepository,
   ) { }
 
   @post('/proyecto')
@@ -48,6 +51,9 @@ export class ProyectoDeConstruccionController {
       // Creo el propietario
       const nuevoPropietario = await this.propietarioRepository.create(proyectoDeConstruccion.propietario);
 
+      // Creo la direccion tecnica
+      const nuevaDireccionTecnica = await this.direccionTecnicaRepository.create(proyectoDeConstruccion.direccionTecnica);
+
       // Creo el proyecto de construcción con el propietario
       const nuevoProyectoDeConstruccion = await this.proyectoDeConstruccionRepository.create({
         nombre: proyectoDeConstruccion.proyecto.nombre,
@@ -63,6 +69,7 @@ export class ProyectoDeConstruccionController {
         otrasExigencias: proyectoDeConstruccion.proyecto.otrasExigencias,
         aprobado: false,
         propietarioId: nuevoPropietario.propietarioId,
+        direccionTecnicaId: nuevaDireccionTecnica.direccionTecnicaId,
       });
 
       // Creo los proyectistas asociados al proyecto de construccion
@@ -104,6 +111,12 @@ export class ProyectoDeConstruccionController {
         {relation: 'tipoObra'},
         {relation: 'propietario'},
         {relation: 'proyectistas'},
+        {
+          relation: 'direccionTecnica',
+          scope: {
+            include: [{relation: 'tipoPersona'}],
+          },
+        },
       ],
     });
   }

@@ -4,6 +4,7 @@ import {Propietario} from './propietario.model';
 import {Provincia} from './provincia.model';
 import {TipoObra} from './tipo-obra.model';
 import {Proyectista} from './proyectista.model';
+import {DireccionTecnica} from './direccion-tecnica.model';
 
 @model()
 export class ProyectoDeConstruccion extends Entity {
@@ -79,6 +80,9 @@ export class ProyectoDeConstruccion extends Entity {
 
   @hasMany(() => Proyectista)
   proyectistas: Proyectista[];
+
+  @belongsTo(() => DireccionTecnica)
+  direccionTecnicaId: string;
 
   constructor(data?: Partial<ProyectoDeConstruccion>) {
     super(data);
