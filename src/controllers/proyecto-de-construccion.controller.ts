@@ -1,12 +1,13 @@
 import {
   Filter,
   FilterExcludingWhere,
-  repository
+  repository,
 } from '@loopback/repository';
 import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -15,7 +16,14 @@ import {
 } from '@loopback/rest';
 import {ProyectoDeConstruccionDTO} from '../dtos/proyecto-de-construccion.dto';
 import {ProyectoDeConstruccion} from '../models';
-import {DireccionTecnicaRepository, PropietarioRepository, ProyectistaRepository, ProyectoDeConstruccionRepository} from '../repositories';
+import {
+  DireccionTecnicaRepository,
+  EspecialidadRepository,
+  PlanoRepository,
+  PropietarioRepository,
+  ProyectistaRepository,
+  ProyectoDeConstruccionRepository,
+} from '../repositories';
 
 export class ProyectoDeConstruccionController {
   constructor(
@@ -30,6 +38,12 @@ export class ProyectoDeConstruccionController {
 
     @repository(DireccionTecnicaRepository)
     public direccionTecnicaRepository: DireccionTecnicaRepository,
+
+    @repository(EspecialidadRepository)
+    public especialidadRepository: EspecialidadRepository,
+
+    @repository(PlanoRepository)
+    public planoRepository: PlanoRepository,
   ) { }
 
   @post('/proyecto')
@@ -48,13 +62,34 @@ export class ProyectoDeConstruccionController {
     proyectoDeConstruccion: ProyectoDeConstruccionDTO,
   ): Promise<ProyectoDeConstruccion> {
     try {
+
+      if (!proyectoDeConstruccion) {
+        throw new HttpErrors.BadRequest('El proyecto de construcción es requerido');
+      }
+
+      if (!proyectoDeConstruccion.proyecto) {
+        throw new HttpErrors.BadRequest('Los datos del proyecto de construcción son requeridos');
+      }
+
+      if (!proyectoDeConstruccion.direccionTecnica) {
+        throw new HttpErrors.BadRequest('Los datos de la dirección técnica son requeridos');
+      }
+
+      if (!proyectoDeConstruccion.proyectistas) {
+        throw new HttpErrors.BadRequest('Los datos de el/los proyectistas son requeridos');
+      }
+
+      if (!proyectoDeConstruccion.planos) {
+        throw new HttpErrors.BadRequest('Los datos de el/los planos son requeridos');
+      }
+
       // Creo el propietario
       const nuevoPropietario = await this.propietarioRepository.create(proyectoDeConstruccion.propietario);
 
       // Creo la direccion tecnica
       const nuevaDireccionTecnica = await this.direccionTecnicaRepository.create(proyectoDeConstruccion.direccionTecnica);
 
-      // Creo el proyecto de construcción con el propietario
+      // Creo el proyecto de construcción con el propietario y la direccion tecnica
       const nuevoProyectoDeConstruccion = await this.proyectoDeConstruccionRepository.create({
         nombre: proyectoDeConstruccion.proyecto.nombre,
         nroExpediente: proyectoDeConstruccion.proyecto.nroExpediente,
@@ -77,6 +112,42 @@ export class ProyectoDeConstruccionController {
         await Promise.all(
           proyectoDeConstruccion.proyectistas.map(async (proyectista) => {
             await this.proyectoDeConstruccionRepository.proyectistas(nuevoProyectoDeConstruccion.proyectoId).create(proyectista);
+          })
+        );
+      }
+
+      // Creo los planos asociados al proyecto de construccion
+      if (proyectoDeConstruccion.planos && proyectoDeConstruccion.planos.length > 0) {
+        await Promise.all(
+          proyectoDeConstruccion.planos.map(async (plano) => {
+
+            // Verifica que se envie la especialidadId
+            if (!plano.especialidad) {
+              throw new HttpErrors.BadRequest('El plano debe tener una especialidad.');
+            }
+
+            // Verifica que la especialidad sea valida antes de crear el plano
+            const especialidadExiste = await this.especialidadRepository.exists(plano.especialidad);
+            if (!especialidadExiste) {
+              throw new HttpErrors.BadRequest('La especialidad es inválida.');
+            }
+
+            // Crea el plano
+            const nuevoPlano = await this.proyectoDeConstruccionRepository.planos(nuevoProyectoDeConstruccion.proyectoId).create({
+              imagen: plano.imagen,
+              especialidadId: plano.especialidad,
+            });
+
+            // Crea etiquetas para el plano
+            if (plano.etiquetas && plano.etiquetas.length > 0) {
+              await Promise.all(
+                plano.etiquetas.map(async (etiqueta) => {
+                  await this.planoRepository.etiquetas(nuevoPlano.planoId).create({
+                    texto: etiqueta,
+                  });
+                })
+              );
+            }
           })
         );
       }
@@ -115,6 +186,15 @@ export class ProyectoDeConstruccionController {
           relation: 'direccionTecnica',
           scope: {
             include: [{relation: 'tipoPersona'}],
+          },
+        },
+        {
+          relation: 'planos',
+          scope: {
+            include: [
+              {relation: 'especialidad'},
+              {relation: 'etiquetas'}
+            ],
           },
         },
       ],

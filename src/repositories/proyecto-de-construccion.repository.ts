@@ -1,13 +1,14 @@
 import {inject, Getter} from '@loopback/core';
 import {DefaultCrudRepository, repository, BelongsToAccessor, HasManyRepositoryFactory} from '@loopback/repository';
 import {FloorplanDataSource} from '../datasources';
-import {ProyectoDeConstruccion, ProyectoDeConstruccionRelations, DestinoFuncional, TipoObra, Provincia, Propietario, Proyectista, DireccionTecnica} from '../models';
+import {ProyectoDeConstruccion, ProyectoDeConstruccionRelations, DestinoFuncional, TipoObra, Provincia, Propietario, Proyectista, DireccionTecnica, Plano} from '../models';
 import {DestinoFuncionalRepository} from './destino-funcional.repository';
 import {TipoObraRepository} from './tipo-obra.repository';
 import {ProvinciaRepository} from './provincia.repository';
 import {PropietarioRepository} from './propietario.repository';
 import {ProyectistaRepository} from './proyectista.repository';
 import {DireccionTecnicaRepository} from './direccion-tecnica.repository';
+import {PlanoRepository} from './plano.repository';
 
 export class ProyectoDeConstruccionRepository extends DefaultCrudRepository<
   ProyectoDeConstruccion,
@@ -27,10 +28,14 @@ export class ProyectoDeConstruccionRepository extends DefaultCrudRepository<
 
   public readonly direccionTecnica: BelongsToAccessor<DireccionTecnica, typeof ProyectoDeConstruccion.prototype.proyectoId>;
 
+  public readonly planos: HasManyRepositoryFactory<Plano, typeof ProyectoDeConstruccion.prototype.proyectoId>;
+
   constructor(
-    @inject('datasources.floorplan') dataSource: FloorplanDataSource, @repository.getter('DestinoFuncionalRepository') protected destinoFuncionalRepositoryGetter: Getter<DestinoFuncionalRepository>, @repository.getter('TipoObraRepository') protected tipoObraRepositoryGetter: Getter<TipoObraRepository>, @repository.getter('ProvinciaRepository') protected provinciaRepositoryGetter: Getter<ProvinciaRepository>, @repository.getter('PropietarioRepository') protected propietarioRepositoryGetter: Getter<PropietarioRepository>, @repository.getter('ProyectistaRepository') protected proyectistaRepositoryGetter: Getter<ProyectistaRepository>, @repository.getter('DireccionTecnicaRepository') protected direccionTecnicaRepositoryGetter: Getter<DireccionTecnicaRepository>,
+    @inject('datasources.floorplan') dataSource: FloorplanDataSource, @repository.getter('DestinoFuncionalRepository') protected destinoFuncionalRepositoryGetter: Getter<DestinoFuncionalRepository>, @repository.getter('TipoObraRepository') protected tipoObraRepositoryGetter: Getter<TipoObraRepository>, @repository.getter('ProvinciaRepository') protected provinciaRepositoryGetter: Getter<ProvinciaRepository>, @repository.getter('PropietarioRepository') protected propietarioRepositoryGetter: Getter<PropietarioRepository>, @repository.getter('ProyectistaRepository') protected proyectistaRepositoryGetter: Getter<ProyectistaRepository>, @repository.getter('DireccionTecnicaRepository') protected direccionTecnicaRepositoryGetter: Getter<DireccionTecnicaRepository>, @repository.getter('PlanoRepository') protected planoRepositoryGetter: Getter<PlanoRepository>,
   ) {
     super(ProyectoDeConstruccion, dataSource);
+    this.planos = this.createHasManyRepositoryFactoryFor('planos', planoRepositoryGetter,);
+    this.registerInclusionResolver('planos', this.planos.inclusionResolver);
     this.direccionTecnica = this.createBelongsToAccessorFor('direccionTecnica', direccionTecnicaRepositoryGetter,);
     this.registerInclusionResolver('direccionTecnica', this.direccionTecnica.inclusionResolver);
     this.proyectistas = this.createHasManyRepositoryFactoryFor('proyectistas', proyectistaRepositoryGetter,);

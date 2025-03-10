@@ -1,10 +1,11 @@
-import {belongsTo, Entity, model, property, hasMany} from '@loopback/repository';
+import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {DestinoFuncional} from './destino-funcional.model';
+import {DireccionTecnica} from './direccion-tecnica.model';
+import {Plano} from './plano.model';
 import {Propietario} from './propietario.model';
 import {Provincia} from './provincia.model';
-import {TipoObra} from './tipo-obra.model';
 import {Proyectista} from './proyectista.model';
-import {DireccionTecnica} from './direccion-tecnica.model';
+import {TipoObra} from './tipo-obra.model';
 
 @model()
 export class ProyectoDeConstruccion extends Entity {
@@ -78,11 +79,14 @@ export class ProyectoDeConstruccion extends Entity {
   @belongsTo(() => Propietario)
   propietarioId: string;
 
+  @belongsTo(() => DireccionTecnica)
+  direccionTecnicaId: string;
+
   @hasMany(() => Proyectista)
   proyectistas: Proyectista[];
 
-  @belongsTo(() => DireccionTecnica)
-  direccionTecnicaId: string;
+  @hasMany(() => Plano)
+  planos: Plano[];
 
   constructor(data?: Partial<ProyectoDeConstruccion>) {
     super(data);

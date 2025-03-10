@@ -21,7 +21,6 @@ export class ProyectoDeConstruccionDTO {
     telefono: string,
     email: string,
   }
-  proyectistas: ProyectistaDTO[];
   direccionTecnica: {
     tipoPersonaId: string,
     razonSocial?: string,
@@ -34,6 +33,8 @@ export class ProyectoDeConstruccionDTO {
     telefono: string,
     email: string,
   }
+  proyectistas: ProyectistaDTO[];
+  planos: PlanoDTO[];
 }
 
 export class ProyectistaDTO {
@@ -43,4 +44,10 @@ export class ProyectistaDTO {
   matricula: string;
   domicilio: string;
   telefono: string;
+}
+
+export class PlanoDTO {
+  imagen: string;
+  especialidad: string;
+  etiquetas: [];
 }
