@@ -48,6 +48,6 @@ export class ProyectistaDTO {
 
 export class PlanoDTO {
   imagen: string;
-  especialidadId: string;
+  especialidad: string;
   etiquetas: [];
 }

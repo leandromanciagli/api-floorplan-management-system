@@ -122,12 +122,12 @@ export class ProyectoDeConstruccionController {
           proyectoDeConstruccion.planos.map(async (plano) => {
 
             // Verifica que se envie la especialidadId
-            if (!plano.especialidadId) {
+            if (!plano.especialidad) {
               throw new HttpErrors.BadRequest('El plano debe tener una especialidad.');
             }
 
             // Verifica que la especialidad sea valida antes de crear el plano
-            const especialidadExiste = await this.especialidadRepository.exists(plano.especialidadId);
+            const especialidadExiste = await this.especialidadRepository.exists(plano.especialidad);
             if (!especialidadExiste) {
               throw new HttpErrors.BadRequest('La especialidad es inválida.');
             }
@@ -135,7 +135,7 @@ export class ProyectoDeConstruccionController {
             // Crea el plano
             const nuevoPlano = await this.proyectoDeConstruccionRepository.planos(nuevoProyectoDeConstruccion.proyectoId).create({
               imagen: plano.imagen,
-              especialidadId: plano.especialidadId,
+              especialidadId: plano.especialidad,
             });
 
             // Crea etiquetas para el plano
