@@ -11,7 +11,6 @@ export * from './direccion-tecnica-tipo-persona.controller';
 export * from './direccion-tecnica.controller';
 export * from './especialidad.controller';
 export * from './provincia.controller';
-<<<<<<< HEAD
 // export * from './proyecto-de-construccion-destino-funcional.controller';
 // export * from './proyecto-de-construccion-tipo-obra.controller';
 // export * from './proyecto-de-construccion-provincia.controller';
@@ -21,16 +20,3 @@ export * from './direccion-tecnica.controller';
 // export * from './direccion-tecnica-tipo-persona.controller';
 export * from './tipo-persona.controller';
 // export * from './proyecto-de-construccion-direccion-tecnica.controller';
-=======
-export * from './proyecto-de-construccion-destino-funcional.controller';
-export * from './proyecto-de-construccion-direccion-tecnica.controller';
-export * from './proyecto-de-construccion-propietario.controller';
-export * from './proyecto-de-construccion-provincia.controller';
-export * from './proyecto-de-construccion-proyectista.controller';
-export * from './proyecto-de-construccion-tipo-obra.controller';
-export * from './tipo-obra.controller';
-export * from './tipo-persona.controller';
-export * from './plano-especialidad.controller';
-export * from './plano-etiqueta.controller';
-export * from './proyecto-de-construccion-plano.controller';
->>>>>>> 466993cca3268be40c14bafd7f588a1f5a83f077
