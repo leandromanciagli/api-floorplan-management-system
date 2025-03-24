@@ -30,10 +30,6 @@ export class Usuario extends Entity {
   @property({
     type: 'string',
     required: true,
-    // unique: true,
-    // index: {
-    //   unique: true
-    // }
   })
   dni: string;
 
@@ -53,6 +49,11 @@ export class Usuario extends Entity {
     type: 'string',
   })
   profilePicture?: string;
+
+  @property({
+    type: 'boolean',
+  })
+  activado: boolean;
 
   @belongsTo(() => Rol)
   rolId: string;

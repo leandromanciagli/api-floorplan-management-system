@@ -44,6 +44,7 @@ export class UsuarioController {
     usuario: Usuario,
   ): Promise<Usuario> {
     try {
+      usuario.activado = true
       let newUsuario = await this.usuarioRepository.create(usuario);
       return newUsuario;
     } catch (error) {
