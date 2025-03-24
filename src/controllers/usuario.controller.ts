@@ -69,7 +69,10 @@ export class UsuarioController {
     try {
       return this.usuarioRepository.find({
         ...filter,
-        include: [{relation: 'rol'}], // Incluye explícitamente la relación rol
+        include: [
+          {relation: 'rol'},
+          {relation: 'organizacion'},
+        ],
       });
     } catch (error) {
       return error;
