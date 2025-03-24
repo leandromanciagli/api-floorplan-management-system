@@ -1,8 +1,9 @@
 import {Getter, inject} from '@loopback/core';
-import {DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
+import {DefaultCrudRepository, HasManyRepositoryFactory, repository, BelongsToAccessor} from '@loopback/repository';
 import {FloorplanDataSource} from '../datasources';
-import {Organizacion, OrganizacionRelations, Usuario} from '../models';
+import {Organizacion, OrganizacionRelations, Usuario, Provincia} from '../models';
 import {UsuarioRepository} from './usuario.repository';
+import {ProvinciaRepository} from './provincia.repository';
 
 export class OrganizacionRepository extends DefaultCrudRepository<
   Organizacion,
@@ -12,10 +13,14 @@ export class OrganizacionRepository extends DefaultCrudRepository<
 
   public readonly usuarios: HasManyRepositoryFactory<Usuario, typeof Organizacion.prototype.organizacionId>;
 
+  public readonly provincia: BelongsToAccessor<Provincia, typeof Organizacion.prototype.organizacionId>;
+
   constructor(
-    @inject('datasources.floorplan') dataSource: FloorplanDataSource, @repository.getter('UsuarioRepository') protected usuarioRepositoryGetter: Getter<UsuarioRepository>,
+    @inject('datasources.floorplan') dataSource: FloorplanDataSource, @repository.getter('UsuarioRepository') protected usuarioRepositoryGetter: Getter<UsuarioRepository>, @repository.getter('ProvinciaRepository') protected provinciaRepositoryGetter: Getter<ProvinciaRepository>,
   ) {
     super(Organizacion, dataSource);
+    this.provincia = this.createBelongsToAccessorFor('provincia', provinciaRepositoryGetter,);
+    this.registerInclusionResolver('provincia', this.provincia.inclusionResolver);
     this.usuarios = this.createHasManyRepositoryFactoryFor('usuarios', usuarioRepositoryGetter,);
     this.registerInclusionResolver('usuarios', this.usuarios.inclusionResolver);
   }

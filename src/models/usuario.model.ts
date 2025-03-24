@@ -1,4 +1,5 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {Organizacion} from './organizacion.model';
 import {Rol} from './rol.model';
 
 @model()
@@ -13,49 +14,51 @@ export class Usuario extends Entity {
   @property({
     type: 'string',
     required: true,
-  })
-  nombre: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  apellido: string;
-
-  @property({
-    type: 'string',
-    required: true,
     unique: true,
     index: {
       unique: true
     }
   })
+  sub: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  nombreYapellido: string;
+
+  @property({
+    type: 'string',
+    required: true,
+    // unique: true,
+    // index: {
+    //   unique: true
+    // }
+  })
   dni: string;
 
   @property({
     type: 'string',
+    required: true,
   })
-  email?: string;
+  email: string;
 
   @property({
     type: 'string',
     required: true,
   })
-  username: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  password: string;
+  telefono: string;
 
   @property({
     type: 'string',
   })
-  organizacionId?: string;
+  profilePicture?: string;
 
   @belongsTo(() => Rol)
   rolId: string;
+
+  @belongsTo(() => Organizacion)
+  organizacionId?: string;
 
   constructor(data?: Partial<Usuario>) {
     super(data);

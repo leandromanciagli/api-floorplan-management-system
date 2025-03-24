@@ -20,3 +20,5 @@ export * from './direccion-tecnica.controller';
 // export * from './direccion-tecnica-tipo-persona.controller';
 export * from './tipo-persona.controller';
 // export * from './proyecto-de-construccion-direccion-tecnica.controller';
+export * from './usuario-organizacion.controller';
+export * from './organizacion-provincia.controller';

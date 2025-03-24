@@ -9,6 +9,7 @@ import {
   getModelSchemaRef,
   HttpErrors,
   param,
+  patch,
   post,
   put,
   requestBody,
@@ -46,10 +47,6 @@ export class UsuarioController {
       let newUsuario = await this.usuarioRepository.create(usuario);
       return newUsuario;
     } catch (error) {
-      if (error.code === 11000) {
-        throw new HttpErrors.BadRequest(`El DNI ${usuario.dni} ya se encuentra registrado.`);
-      }
-      console.log(error);
       throw new HttpErrors.InternalServerError(error);
     }
   }
@@ -95,6 +92,31 @@ export class UsuarioController {
     return this.usuarioRepository.findById(id, filter);
   }
 
+  @get('/usuarios/sub/{sub}')
+  @response(200, {
+    description: 'Usuario model instance found by sub',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Usuario, {includeRelations: true}),
+      },
+    },
+  })
+  async findBySub(
+    @param.path.string('sub') sub: string
+  ): Promise<Usuario | null> {
+    try {
+      return this.usuarioRepository.findOne({
+        where: {sub},
+        include: [
+          {relation: 'rol'},
+          {relation: 'organizacion'},
+        ],
+      },);
+    } catch (error) {
+      return error;
+    }
+  }
+
   @put('/usuarios/{id}')
   @response(204, {
     description: 'Usuario PUT success',
@@ -106,11 +128,32 @@ export class UsuarioController {
     try {
       await this.usuarioRepository.replaceById(id, usuario);
     } catch (error) {
-      if (error.code === 11000) {
-        throw new HttpErrors.BadRequest(`El DNI ${usuario.dni} ya se encuentra registrado.`);
-      }
       throw new HttpErrors.InternalServerError('Error al crear el usuario');
     }
+  }
+
+  @patch('/usuarios/{id}')
+  @response(200, {
+    description: 'Usuario PATCH success',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Usuario, {includeRelations: true}),
+      },
+    },
+  })
+  async updateById(
+    @param.path.string('id') id: string,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Usuario, {partial: true}),
+        },
+      },
+    })
+    usuario: Usuario,
+  ): Promise<Usuario> {
+    await this.usuarioRepository.updateById(id, usuario);
+    return this.usuarioRepository.findById(id);
   }
 
   @del('/usuarios/{id}')

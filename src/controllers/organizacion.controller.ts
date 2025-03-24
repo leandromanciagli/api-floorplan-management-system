@@ -58,7 +58,10 @@ export class OrganizacionController {
   async find(
     @param.filter(Organizacion) filter?: Filter<Organizacion>,
   ): Promise<any[]> {
-    const organizaciones = await this.organizacionRepository.find(filter);
+    const organizaciones = await this.organizacionRepository.find({
+      ...filter,
+      include: [{relation: 'provincia'}]
+    });
 
     // Contar la cantidad de usuarios para cada organización
     const organizacionesConUsuarios = await Promise.all(
